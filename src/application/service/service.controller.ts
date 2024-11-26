@@ -12,10 +12,10 @@ export class ServiceController {
   // Criar um serviço
   @Post()
   async create(
-    @Request() req,  
+    @Request() req,
     @Body() createServiceDto: CreateServiceDto,
   ) {
-    const providerId = req.user.id;  // Acessando o id do provedor do token JWT
+    const providerId = req.user.id;  // Extrair diretamente o id do objeto de usuário
     return this.serviceService.create(providerId, createServiceDto);
   }
 

@@ -8,22 +8,20 @@ export class ServiceService {
   constructor(private readonly prisma: PrismaService) {}
 
   // Criar um serviço
-  async create(createServiceDto: CreateServiceDto, @Req() req) {
-    const providerId = req.user.id;  
-    console.log('Provider ID:', providerId);  
-      
+  async create(providerId: number, createServiceDto: CreateServiceDto) {
+    console.log('ID do Provedor:', providerId);
+
     if (!providerId) {
-      throw new UnauthorizedException('Provider ID is missing or invalid.');
+      throw new UnauthorizedException('ID do Provedor está ausente ou inválido.');
     }
-  
+
     return this.prisma.service.create({
       data: {
         ...createServiceDto,
-        providerId: providerId,  
+        providerId: providerId,
       },
     });
   }
-  
 
   // Atualizar um serviço
   async update(serviceId: number, providerId: number, updateServiceDto: UpdateServiceDto) {
