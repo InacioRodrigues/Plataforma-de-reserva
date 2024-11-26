@@ -5,14 +5,14 @@ import { UpdateServiceDto } from './UpdateServiceDto';
 import { AuthGuard } from '@nestjs/passport';
 
 @Controller('services')
-@UseGuards(AuthGuard('jwt')) // Aplica o guard para todas as rotas
+@UseGuards(AuthGuard('jwt')) 
 export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
 
   // Criar um serviço
   @Post()
   async create(
-    @Request() req,  // Acessando o usuário autenticado via req.user
+    @Request() req,  
     @Body() createServiceDto: CreateServiceDto,
   ) {
     const providerId = req.user.id;  // Acessando o id do provedor do token JWT
@@ -23,10 +23,10 @@ export class ServiceController {
   @Patch(':id')
   async update(
     @Param('id') serviceId: number,
-    @Request() req,  // Acessando o usuário autenticado via req.user
+    @Request() req,  
     @Body() updateServiceDto: UpdateServiceDto,
   ) {
-    const providerId = req.user.id;  // Acessando o id do provedor do token JWT
+    const providerId = req.user.id;  
     return this.serviceService.update(serviceId, providerId, updateServiceDto);
   }
 

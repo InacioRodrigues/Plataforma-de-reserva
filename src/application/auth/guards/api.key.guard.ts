@@ -11,24 +11,27 @@ import {
     constructor() {}
   
     async canActivate(context: ExecutionContext): Promise<boolean> {
-      const req = context.switchToHttp().getRequest();
-  
-      const apiKey = req.headers['x-apikey'];
-  
-      if (!apiKey) {
-        throw new UnauthorizedException(
-          'You are not allowed to access this resource!',
-        );
+        const req = context.switchToHttp().getRequest();
+        console.log('Headers:', req.headers);
+        // Verifique se o token JWT está presente
+        const apiKey = req.headers['x-apikey'];
+        console.log('API Key:', apiKey);
+      
+        if (!apiKey) {
+          throw new UnauthorizedException(
+            'You are not allowed to access this resource!',
+          );
+        }
+      
+        const canAccess = API_KEYS.includes(apiKey);
+      
+        if (!canAccess) {
+          throw new UnauthorizedException(
+            'You are not allowed to access this resource!',
+          );
+        }
+      
+        return canAccess;
       }
-  
-      const canAccess = API_KEYS.includes(apiKey);
-  
-      if (!canAccess) {
-        throw new UnauthorizedException(
-          'You are not allowed to access this resource!',
-        );
-      }
-  
-      return canAccess;
-    }
+      
   }
