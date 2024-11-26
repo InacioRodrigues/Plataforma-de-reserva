@@ -1,22 +1,21 @@
-import { Controller, Post, Body, UseGuards, Get, Param, Patch } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Param, Patch, Request } from '@nestjs/common';
 import { BookingService } from './booking.service';
 import { CreateBookingDto } from './booking.dto';
 import { UpdateBookingDto } from './UpdateBookingDto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorator/current-user.decorator';
-
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('bookings')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard('jwt'))  // Aplica o guard para todas as rotas
 export class BookingController {
   constructor(private readonly bookingService: BookingService) { }
 
   // Criar uma nova reserva
   @Post()
   async create(
-    @CurrentUser('id') clientId: number,
+    @Request() req,  // Acessando o usuário autenticado via req.user
     @Body() createBookingDto: CreateBookingDto,
   ) {
+    const clientId = req.user.id;  // Acessando o id do cliente do toke
     return this.bookingService.create(clientId, createBookingDto);
   }
 
@@ -31,13 +30,15 @@ export class BookingController {
 
   // Listar reservas do cliente autenticado
   @Get('client')
-  async findClientBookings(@CurrentUser('id') clientId: number) {
+  async findClientBookings(@Request() req) {
+    const clientId = req.user.id;  // Acessando o id do cliente do token JWT
     return this.bookingService.findByClient(clientId);
   }
 
   // Listar reservas de um provedor
   @Get('provider')
-  async findProviderBookings(@CurrentUser('id') providerId: number) {
+  async findProviderBookings(@Request() req) {
+    const providerId = req.user.id;  // Acessando o id do provedor do token JWT
     return this.bookingService.findByProvider(providerId);
   }
 
@@ -45,5 +46,4 @@ export class BookingController {
   async cancel(@Param('id') bookingId: number) {
     return this.bookingService.cancel(bookingId);
   }
-
 }

@@ -2,8 +2,7 @@ import { Controller, Post, Body, Patch, Param, Get, UseGuards } from '@nestjs/co
 import { UserService } from './user.service';
 import { CreateUserDto } from './create-user.dto';
 import { UpdateUserDto } from './UpdateUserDto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UserController {
@@ -17,7 +16,7 @@ export class UserController {
 
   // Atualizar informações do usuário autenticado
   @Patch(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   async update(
     @Param('id') userId: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -27,7 +26,7 @@ export class UserController {
 
   // Buscar informações do usuário autenticado
   @Get(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(AuthGuard('jwt'))
   async findById(@Param('id') userId: number) {
     return this.userService.findById(userId);
   }

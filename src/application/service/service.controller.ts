@@ -1,22 +1,21 @@
-import { Controller, Post, Body, UseGuards, Get, Patch, Param } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Get, Patch, Param, Request } from '@nestjs/common';
 import { ServiceService } from './service.service';
 import { CreateServiceDto } from './service.dto';
 import { UpdateServiceDto } from './UpdateServiceDto';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { CurrentUser } from '../auth/decorator/current-user.decorator';
-
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('services')
-@UseGuards(JwtAuthGuard)
+@UseGuards(AuthGuard('jwt')) // Aplica o guard para todas as rotas
 export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
 
   // Criar um serviço
   @Post()
   async create(
-    @CurrentUser('id') providerId: number,
+    @Request() req,  // Acessando o usuário autenticado via req.user
     @Body() createServiceDto: CreateServiceDto,
   ) {
+    const providerId = req.user.id;  // Acessando o id do provedor do token JWT
     return this.serviceService.create(providerId, createServiceDto);
   }
 
@@ -24,15 +23,17 @@ export class ServiceController {
   @Patch(':id')
   async update(
     @Param('id') serviceId: number,
-    @CurrentUser('id') providerId: number,
+    @Request() req,  // Acessando o usuário autenticado via req.user
     @Body() updateServiceDto: UpdateServiceDto,
   ) {
+    const providerId = req.user.id;  // Acessando o id do provedor do token JWT
     return this.serviceService.update(serviceId, providerId, updateServiceDto);
   }
 
   // Listar serviços de um provedor
   @Get('provider')
-  async findProviderServices(@CurrentUser('id') providerId: number) {
+  async findProviderServices(@Request() req) {
+    const providerId = req.user.id;  // Acessando o id do provedor do token JWT
     return this.serviceService.findByProvider(providerId);
   }
 
